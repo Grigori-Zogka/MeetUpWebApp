@@ -41,7 +41,7 @@ namespace RunGroupWebApp.Controllers
         }
 
         //[HttpGet("/{id}")]
-        public async Task<IActionResult> Detail(int id)
+        public  async Task<IActionResult > Detail(int id)
         {
             //Club club = _context.Clubs.FirstOrDefault(c => c.Id ==id);
             //In order to include the address  (joined in the  club with Address ID)
@@ -50,7 +50,7 @@ namespace RunGroupWebApp.Controllers
             return View(club);
         }
 
-        public IActionResult Create()
+       public IActionResult Create()
         {
             return View();
 
@@ -61,34 +61,33 @@ namespace RunGroupWebApp.Controllers
         {
             if (ModelState.IsValid)
             {
-                //return View(club);
                 var result = await _photoService.AddPhotoAsync(clubVM.Image);
 
                 var club = new Club
                 {
-                    Title = clubVM.Title;
-                Description = clubVM.Description;
-                Image = result.Uri.ToString();
-            };
+                    Title = clubVM.Title,
+                    Description = clubVM.Description,
+                    Image = result.Url.ToString(),
+                    ClubCategory = clubVM.ClubCategory,
+                    //AppUserId = clubVM.AppUserId,
+                    //Address = new Address
+                    //{
+                    //    Street = clubVM.Address.Street,
+                    //    City = clubVM.Address.City,
+                    //    State = clubVM.Address.State,
+                    //}
+                };
+                _clubRepository.Add(club);
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                ModelState.AddModelError("", "Photo upload failed");
+            }
 
-
-
-            _clubRepository.Add(club);
-            return RedirectToAction("Index");
+            return View(clubVM);
         }
 
-      
-        }
-
-
-     }
-
-
-
-   
- 
-
-
-    
-
+    }
+}
 
