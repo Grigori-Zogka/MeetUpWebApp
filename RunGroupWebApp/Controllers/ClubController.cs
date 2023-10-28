@@ -70,12 +70,12 @@ namespace RunGroupWebApp.Controllers
                     Image = result.Url.ToString(),
                     ClubCategory = clubVM.ClubCategory,
                     //AppUserId = clubVM.AppUserId,
-                    //Address = new Address
-                    //{
-                    //    Street = clubVM.Address.Street,
-                    //    City = clubVM.Address.City,
-                    //    State = clubVM.Address.State,
-                    //}
+                    Address = new Address
+                    {
+                        Street = clubVM.Address.Street,
+                        City = clubVM.Address.City,
+                        State = clubVM.Address.State,
+                    }
                 };
                 _clubRepository.Add(club);
                 return RedirectToAction("Index");
