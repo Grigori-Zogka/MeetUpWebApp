@@ -89,6 +89,76 @@ namespace RunGroupWebApp.Controllers
 
             return View(raceVM);
         }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Edit(int id)
+        {
+            var race = await _raceRepository.GetByIdAsync(id);
+            if (race == null) return View("Error");
+            var raveVM = new EditRaceViewModel
+            {
+                Title = race.Title,
+                Description = race.Description,
+                AddressId = race.AddressId,
+                Address = race.Address,
+                URL = race.Image,
+                RaceCategory = race.RaceCategory
+            };
+            return View(raveVM);
+        }
+
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(int id, EditRaceViewModel raceVM)
+        {
+            if (!ModelState.IsValid)
+            {
+                ModelState.AddModelError("", "Failed to edit club");
+                return View("Edit", raceVM);
+            }
+
+            var userCRace= await _raceRepository.GetByIdAsyncNoTracking(id);
+
+            if (userCRace != null)
+            {
+                try
+                {
+
+                    await _photoService.DeletePhotoAsync(userCRace.Image);
+                }
+                catch
+                {
+                    ModelState.AddModelError("Image", "Photo upload failed");
+                    return View(raceVM);
+                }
+
+
+                var photoResult = await _photoService.AddPhotoAsync(raceVM.Image);//IFormFile Image { get; set; }
+
+                var club = new Race
+                {
+                    Id = id,
+                    Title = raceVM.Title,
+                    Description = raceVM.Description,
+                    Image = photoResult.Url.ToString(),
+                    AddressId = raceVM.AddressId,
+                    Address = raceVM.Address,
+                };
+
+                _raceRepository.Update(club);
+
+                return RedirectToAction("Index");
+            }
+            else
+            {
+                return View(raceVM);
+            }
+
+        }//Edit post
+
+
+
     }
 }
 

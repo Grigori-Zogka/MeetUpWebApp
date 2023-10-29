@@ -37,6 +37,11 @@ namespace RunGroupWebApp.Repository
             return _context.Races.Include(ad=>ad.Address).FirstOrDefaultAsync(c => c.Id == id);
         }
 
+        public Task<Race> GetByIdAsyncNoTracking(int id)
+        {
+            return _context.Races.Include(ad => ad.Address).AsNoTracking().FirstOrDefaultAsync(c => c.Id == id);
+        }
+
         public async Task<IEnumerable<Race>> GetRacesByCity(string city)
         {
             return await _context.Races.Where(c => c.Address.City.Contains(city)).ToListAsync();
@@ -50,7 +55,8 @@ namespace RunGroupWebApp.Repository
 
         public bool Update(Race race)
         {
-            throw new NotImplementedException();
+            _context.Update(race);
+            return Save();
         }
     }
 }
